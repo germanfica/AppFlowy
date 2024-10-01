@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  appflowy:
+    image: appflowyio/appflowy_client
+    container_name: appflowy
+    ports:
+      - "8080:8080"
+    volumes:
+      - appflowy_data:/appflowy/data
+    environment:
+      - RUST_LOG=info
+      - DATABASE_URL=postgres://appflowy:password@db:5432/appflowy
+      - DISPLAY=${DISPLAY}
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  db:
+    image: postgres:13-alpine
+    container_name: appflowy_db
+    environment:
+      - POSTGRES_DB=appflowy
+      - POSTGRES_USER=appflowy
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  appflowy_data:
+  db_data:
